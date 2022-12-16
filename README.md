@@ -2,7 +2,7 @@
 
 A [Github Action](https://github.com/actions) for creating a new [VisWiz.io](https://www.viswiz.io/) build.
 
-![VisWiz.io](https://www.viswiz.io/assets/logos/viswiz-102x44-grey.png)
+<img src="https://www.viswiz.io/assets/logos/viswiz-500x500-dark.png" width="200" />
 
 ## Usage
 
