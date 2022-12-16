@@ -1,0 +1,81 @@
+name: VisWiz Build
+description: Creates a new build on VisWiz.io.
+author: VisWiz.io
+
+inputs:
+  api-key:
+    description: The API key to use when creating a new build
+    required: true
+  images-directory:
+    description: The folder containing the images for the new build
+    required: true
+  project-id:
+    description: The project ID containing the new build
+    required: true
+
+branding:
+  color: green
+  icon: check-circle
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        BRANCH_NAME="${{ github.ref }}"
+        COMMIT_SHA="${{ github.sha }}"
+
+        if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+          COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+        fi
+
+        echo "branch_name=${BRANCH_NAME##refs/heads/}" >> $GITHUB_OUTPUT
+        echo "commit_message=$(git log --format=%B -n 1 $COMMIT_SHA)" >> $GITHUB_OUTPUT
+        echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+        echo "viswiz_version=2" >> $GITHUB_OUTPUT
+      shell: bash
+      id: vars
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '18'
+
+    - run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      shell: bash
+      id: npm-cache
+
+    - uses: actions/cache@v3
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-viswiz-${{ steps.vars.outputs.viswiz_version }}
+
+    - run: |
+        echo "::group::Installing viswiz CLI"
+        npm install viswiz
+        echo "::endgroup::"
+      shell: bash
+
+    # https://stackoverflow.com/a/42636741
+    - run: |
+        echo "::group::Creating new viswiz build"
+
+        exec {stdout_copy}>&1
+        OUTPUT=$($(npm bin)/viswiz build \
+          --branch "${{ steps.vars.outputs.branch_name }}" \
+          --image-dir "${{ inputs.images-directory }}" \
+          --message "${{ steps.vars.outputs.commit_message }}" \
+          --project "${{ inputs.project-id }}" \
+          --revision "${{ steps.vars.outputs.commit_sha }}" | tee /dev/fd/$stdout_copy)
+        exec {stdout_copy}>&-
+
+        echo "::endgroup::"
+
+        for LINE in $OUTPUT; do
+          if [[ "$LINE" =~ .*app.viswiz.io.* ]]; then
+            echo "### VisWiz.io Report" >> $GITHUB_STEP_SUMMARY
+            echo ":eyes: [View full report]($LINE)" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+      shell: bash
+      env:
+        VISWIZ_API_KEY: ${{ inputs.api-key }}
