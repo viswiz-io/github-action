@@ -64,7 +64,7 @@ runs:
         echo "::group::Creating new viswiz build"
 
         exec {stdout_copy}>&1
-        OUTPUT=$($(npm bin)/viswiz build \
+        OUTPUT=$(npm exec viswiz -- build \
           --branch "${{ steps.vars.outputs.branch_name }}" \
           --image-dir "${{ inputs.images-directory }}" \
           --message "${{ steps.vars.outputs.commit_message }}" \
