@@ -12,6 +12,10 @@ inputs:
   project-id:
     description: The project ID containing the new build
     required: true
+  server-url:
+    description: The VisWiz.io server URL
+    required: false
+    default: https://api.viswiz.io
 
 branding:
   color: green
@@ -51,7 +55,7 @@ runs:
 
     - run: |
         echo "::group::Installing viswiz CLI"
-        npm install viswiz
+        npm install viswiz@${{ steps.vars.outputs.viswiz_version }}
         echo "::endgroup::"
       shell: bash
 
@@ -79,3 +83,4 @@ runs:
       shell: bash
       env:
         VISWIZ_API_KEY: ${{ inputs.api-key }}
+        VISWIZ_SERVER: ${{ inputs.server-url }}
