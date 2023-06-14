@@ -10,7 +10,7 @@ A [Github Action](https://github.com/actions) for creating a new [VisWiz.io](htt
 2. Grab your VisWiz.io [API key](https://app.viswiz.io/account) and save it to your GitHub repository’s **Settings → Secrets**.
 2. Create a VisWiz.io project and grab the project's ID, and optionally save it to your GitHub repository’s **Settings → Secrets**.
 
-For example, the following workflow creates a new Buildkite build on every commit:
+For example, the following workflow creates a new VisWiz.io build on every commit:
 
 ```yaml
 - uses: viswiz-io/github-action@v1
@@ -23,7 +23,7 @@ For example, the following workflow creates a new Buildkite build on every commi
 ## Inputs
 
 | Input | Description |
-| - | - |
+| --- | --- |
 | api-key | The API key to use when creating a new build |
 | images-directory | The folder containing the images for the new build |
 | project-id | The project ID containing the new build |
