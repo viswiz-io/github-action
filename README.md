@@ -7,8 +7,8 @@ A [Github Action](https://github.com/actions) for creating a new [VisWiz.io](htt
 ## Usage
 
 1. Create a [VisWiz.io](https://www.viswiz.io/) account.
-2. Grab your VisWiz.io [API key](https://app.viswiz.io/account) and save it to your GitHub repository’s **Settings → Secrets**.
-2. Create a VisWiz.io project and grab the project's ID, and optionally save it to your GitHub repository’s **Settings → Secrets**.
+2. Copy your VisWiz.io [API key](https://app.viswiz.io/account) and save it to your GitHub repository’s **Settings → Secrets**.
+2. Create a VisWiz.io project and copy the project's ID.
 
 For example, the following workflow creates a new VisWiz.io build on every commit:
 
@@ -17,7 +17,7 @@ For example, the following workflow creates a new VisWiz.io build on every commi
   with:
     api-key: ${{ secrets.VISWIZ_API_KEY }}
     images-directory: ./output/
-    project-id: ${{ secrets.VISWIZ_PROJECT_ID }}
+    project-id: $VISWIZ_PROJECT_ID
 ```
 
 ## Inputs
