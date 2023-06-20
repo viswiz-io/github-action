@@ -41,6 +41,7 @@ runs:
       id: vars
 
     - uses: actions/setup-node@v3
+      id: setup-node
       with:
         node-version: '18.16.0'
 
@@ -51,7 +52,7 @@ runs:
     - uses: actions/cache@v3
       with:
         path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-viswiz-${{ steps.vars.outputs.viswiz_version }}
+        key: ${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-viswiz-${{ steps.vars.outputs.viswiz_version }}
 
     - run: |
         echo "::group::Installing viswiz CLI"
@@ -61,7 +62,8 @@ runs:
       shell: bash
 
     # https://stackoverflow.com/a/42636741
-    - run: |
+    - name: Creating new viswiz build
+      run: |
         echo "::group::Creating new viswiz build"
 
         exec {stdout_copy}>&1
