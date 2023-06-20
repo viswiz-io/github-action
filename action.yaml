@@ -34,37 +34,29 @@ runs:
         fi
 
         echo "branch_name=${BRANCH_NAME##refs/heads/}" >> $GITHUB_OUTPUT
-        echo "commit_message=$(git log --format=%B -n 1 $COMMIT_SHA)" >> $GITHUB_OUTPUT
+        echo "commit_message=$(git log --format=%s -n 1 $COMMIT_SHA)" >> $GITHUB_OUTPUT
         echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
         echo "viswiz_version=2" >> $GITHUB_OUTPUT
       shell: bash
       id: vars
 
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
     - uses: actions/setup-node@v3
+      id: setup-node
       with:
         node-version: '18'
-
-    - run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-      shell: bash
-      id: npm-cache
-
-    - uses: actions/cache@v3
-      with:
-        path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-viswiz-${{ steps.vars.outputs.viswiz_version }}
-
-    - run: |
-        echo "::group::Installing viswiz CLI"
-        npm install viswiz@${{ steps.vars.outputs.viswiz_version }}
-        echo "::endgroup::"
-      shell: bash
 
     # https://stackoverflow.com/a/42636741
     - run: |
         echo "::group::Creating new viswiz build"
 
+        pnpm -v
+
         exec {stdout_copy}>&1
-        OUTPUT=$(npm exec viswiz -- build \
+        OUTPUT=$(pnpm dlx viswiz@${{ steps.vars.outputs.viswiz_version }} build \
           --branch "${{ steps.vars.outputs.branch_name }}" \
           --image-dir "${{ inputs.images-directory }}" \
           --message "${{ steps.vars.outputs.commit_message }}" \
