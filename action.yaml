@@ -55,7 +55,8 @@ runs:
 
     - run: |
         echo "::group::Installing viswiz CLI"
-        npm install viswiz@${{ steps.vars.outputs.viswiz_version }}
+        npm -v
+        npm install viswiz@${{ steps.vars.outputs.viswiz_version }} || cat /home/runner/.npm/_logs/*.log
         echo "::endgroup::"
       shell: bash
 
