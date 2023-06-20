@@ -69,7 +69,7 @@ runs:
           --image-dir "${{ inputs.images-directory }}" \
           --message "${{ steps.vars.outputs.commit_message }}" \
           --project "${{ inputs.project-id }}" \
-          --revision "${{ steps.vars.outputs.commit_sha }}" | tee /dev/fd/$stdout_copy)
+          --revision "${{ steps.vars.outputs.commit_sha }}" | tee /dev/fd/$stdout_copy || cat /home/runner/.npm/_logs/*.log)
         exec {stdout_copy}>&-
 
         echo "::endgroup::"
